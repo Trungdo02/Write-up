@@ -113,8 +113,8 @@ chưa có gì hot
 
 ![ezp2.2](ezp2.2.png)
 
-Chương trình đưa cho ta một địa chỉ, bắt ta nhập vào 1 địa chỉ rồi nó sẽ leak ra 8 byte của địa chỉ đó.
-Nhưng mà nhìn ntn thì vẫn chưa giải quyêt đc gì, ném vào IDA thôi =))
+Chương trình đưa cho ta một địa chỉ, bắt ta nhập vào 1 địa chỉ rồi nó sẽ `leak` ra 8 byte của địa chỉ đó.
+Nhưng mà nhìn ntn thì vẫn chưa giải quyêt đc gì, ném vào `IDA` thôi =))
 **checksec** 
 
     gdb-peda$ checksec
@@ -124,7 +124,7 @@ Nhưng mà nhìn ntn thì vẫn chưa giải quyêt đc gì, ném vào IDA thôi
     PIE       : ENABLED
     RELRO     : FULL
 
-Canary được bật, như tớ nói ở trên, nó sẽ làm việc bof khó khăn hơn, NX - non excutable stack, khi NX enable ta sẽ không thể dùng shellcode, PIE - Position Independent Executable theo như tớ tìm hiểu được nó có chức năng gần giống ASLR -address space layout randomization. Trong khi ASLR chỉ là load chương trình vào 1 vùng vùng nhớ random nào đó, còn PIE sẽ complile và lưu trũ tại physical memory, lúc chạy nó sẽ ánh xạ tới 1 địa chỉ logic trên bộ nhớ với 1 offset không đổi trong xuyên suốt quá trình thực thi, cái này tạo ra để đối phó với ROP =))
+Canary được bật, như tớ nói ở trên, nó sẽ làm việc bof khó khăn hơn, `NX - non excutable stack`, khi `NX` enable ta sẽ không thể dùng shellcode, `PIE - Position Independent Executable` theo như tớ tìm hiểu được nó có chức năng gần giống `ASLR -address space layout randomization`. Trong khi `ASLR` chỉ là load chương trình vào 1 vùng vùng nhớ random nào đó, còn `PIE` sẽ complile và lưu trũ tại physical memory, lúc chạy nó sẽ ánh xạ tới 1 vùng nhớ logic random nào đó trên bộ nhớ với 1 *offset* không đổi trong xuyên suốt quá trình thực thi, cái này tạo ra để đối phó với `ROP` =))
 
 #### Source code
 `main()`: 
@@ -137,7 +137,7 @@ int __cdecl __noreturn main(int argc, const char **argv, const char **envp)
 }
 ```
 * in ra Hi! I am the Stack Oracle.
-* vòng lặp while vô hạn gọi func gimme_pointer()
+* vòng lặp while vô hạn gọi func `gimme_pointer()`
 
 `gimme_pointer()`:
 
@@ -184,7 +184,7 @@ unsigned __int64 gimme_pointer()
   return result;
 }
 ```
-* giống như tên gọi, chức năng của nó là chuyển đổi hex string thành 1 dãy các byte
+* giống như tên gọi, chức năng của nó là chuyển đổi `hex` string thành 1 dãy các `byte`
 
 `print_buf()`:
 
@@ -198,7 +198,7 @@ int __fastcall print_buf(__int64 a1, int a2)
   return puts("\n");
 }
 ```
-* hàm này chỉ dùng để in leak contents
+* hàm này chỉ dùng để in **leak contents**
 
 `this_function_literally_prints_the_flag()`: 
 
@@ -217,23 +217,23 @@ unsigned __int64 this_function_literally_prints_the_flag()
   return __readfsqword(0x28u) ^ v3;
 }
 ```
-* chứa flag
-* đây là func mà ta phải return tới
+* chứa `flag`
+* đây là func mà ta phải `return` tới
 
 #### Analysis
 
 ![ezp2.3](ezp2.3.png)
 
-Ta tập trung khai thác vuln đó là func gimme_pointer(). Bên trong func gimme_pointer(), $rsp chỉ dành ra khoảng trống có độ lớn 0x30 mà trong khi đó chương trình lại đọc tận 0x40 byte vào buf, chắc hẳn phải có ẩn ý gì đó chứ người bình thường ai lại làm như này :)). Và địa chỉ của buf là `[rbp - 0x20]`
-Độ lớn mà buf cung cấp đủ để ta có thể overwrite được return Addr. Nhưng đâu có dễ như vậy =)) vấn đề là nếu ta overwrite cả biến stack canary thì trước khi nhảy tới addr chỉ định chương trình đã exit rồi, chưa kể việc lấy địa chỉ gặp nhiều khó khăn do PIE
+Ta tập trung khai thác `vuln` đó là func `gimme_pointer()`. Bên trong func `gimme_pointer()`, `$rsp` chỉ dành ra khoảng trống có độ lớn `0x30` mà trong khi đó chương trình lại đọc tận `0x40` byte vào `buf`, chắc hẳn phải có ẩn ý gì đó chứ người bình thường ai lại làm như này :)). Và địa chỉ của `buf` là `[rbp - 0x20]`
+Độ lớn mà `buf` cung cấp đủ để ta có thể **overwrite** được `return Addr`. Nhưng đâu có dễ như vậy =)) vấn đề là nếu ta **overwrite** cả biến s`tack canary` thì trước khi nhảy tới `addr` chỉ định chương trình đã `exit` rồi, chưa kể việc lấy địa chỉ gặp nhiều khó khăn do `PIE`
 
 ![ezp2.4](ezp2.4.png)
 
-May thay là chương trình sẽ cung cấp cho ta một địa chỉ, đó chính là địa chỉ của stack hiện tại và cũng chính là của buf. Ta có thể bypass PIE bằng cách tính toán các độ lệch giữa các biến và giữa các func để tìm ra địa chỉ của this_function_literally_prints_the_flag() (do nó chỉ ánh xạ tới random logic memory nhưng khoảng cách giữa chúng vẫn giữ nguyên). Còn canary, thông qua leak addr và offset ta đã tính toán từ trước, ta có thể nhờ chương trình leak contents ra rồi push y nguyên vào là sẽ qua thôi :3. 
+May thay là chương trình sẽ cung cấp cho ta một `địa chỉ`, đó chính là địa chỉ của `stack` hiện tại và cũng chính là của `buf`. Ta có thể `bypass PIE` bằng cách tính toán các độ lệch giữa các biến và giữa các func để tìm ra địa chỉ của `this_function_literally_prints_the_flag()` (do nó chỉ ánh xạ tới random logic memory nhưng khoảng cách giữa chúng vẫn giữ nguyên). Còn `canary`, thông qua *leak addr* và *offset* ta đã tính toán từ trước, ta có thể nhờ chương trình **leak contents** ra rồi push y nguyên vào là sẽ qua thôi :3. 
 
 ![ezp2.5](ezp2.5.png)
 
-Trước khi thực hiện function call, chương trình sẽ lưu lại địa chỉ trả về chính là địa chỉ câu lệnh tiếp theo main + 26. Nói cách khác return addr của gimme_pointer là 0x0000555555400a21
+Trước khi thực hiện function call, chương trình sẽ lưu lại địa chỉ trả về chính là địa chỉ câu lệnh tiếp theo **main + 26**. Nói cách khác return addr của `gimme_pointer` là **0x0000555555400a21**
 
     gdb-peda$ p this_function_literally_prints_the_flag
     $2 = {<text variable, no debug info>} 0x5555554008f7 <this_function_literally_prints_the_flag>
@@ -245,7 +245,7 @@ Tiếp theo cần tính toán độ lệch giữa các local variable để *byp
 
 ![ezp2.6](ezp2.6.png)
 
-Address được leak khi chương trình khởi chạy chính là biến buf và cũng chính là địa chỉ hiện tại của stack. 0x20 - 0x8 = 0x18 là offset từ leakAddr tới canary. Giờ ta có thể tính toán được địa chỉ của canary rồi nhờ chương trình leak giá trị trong nó. 0x20 là offset từ leak tới rbp. 0x28 là offset của retAddr. Ta chú trọng vào 2 giá trị của canary và retAddr còn rbp chứa gì cũng chả ảnh hưởng :))
+`Address` được `leak` khi chương trình khởi chạy chính là biến buf và cũng chính là địa chỉ hiện tại của stack. **0x20 - 0x8 = 0x18** là `offset` từ `leakAddr` tới `canary`. Giờ ta có thể tính toán được địa chỉ của `canary` rồi nhờ chương trình `leak` giá trị trong nó. **0x20** là `offset` từ `leak` tới `rbp`. **0x28** là offset của `retAddr`. Ta chú trọng vào 2 giá trị của **canary** và **retAddr** còn rbp chứa gì cũng chả ảnh hưởng :))
 
 #### Exploit
 
@@ -263,7 +263,7 @@ def read_leak(offset):
     addr = int((proc.recvline().strip().decode()), 16) + offset
     proc.readline()
     proc.sendline((p64(addr).hex().encode())) # proc nhận hex string rồi phân tích thành mảng các byte
-    proc.recvline() # ignore here...
+    proc.recvline() # ignore here are the...
     test = proc.recvline().strip().decode() # bỏ \n, chuyển về kiểu string
     change= ''
     for i in range(0,len(test),2): # vì dữ liệu đc leak ra theo dạng little endian nên phải convert cho đúng để tí còn send =))
