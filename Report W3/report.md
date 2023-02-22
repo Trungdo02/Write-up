@@ -6,6 +6,7 @@ Canary là một giá trị bí mật được chương trình push vào stack n
 |canary|
 |ebp|
 |ret|
+
 Để bypass cái này chỉ có cách lấy được giá trị của nó thôi (brute force chẳng hạn)  =))
 
 ## NX (NX bit - Non-Executable Stack)
@@ -53,7 +54,7 @@ Là một cơ chế bảo vệ bằng cách ngẫu nhiên hóa địa chỉ bộ
 Vì offset giữa các phần tử trong libc vẫn không thay đổi nên nếu có thể leak ra được 1 địa chỉ trong got hoặc plt ta có thể tận dụng được hàm nào đấy trong libc để tạo shell (vd system('/bin/sh'))
 
 ## Stack frame 
-Stack là một phân đoạn của bộ nhớ có thể thay đổi kích thước và tồn tại trong suốt quá trình thực thi của chương trình. Một stack frame sẽ được cung cấp cho một funtion mỗi khi được gọi tới. Nó chứa các local variable và các argument cùng với một return address. Stack frame sẽ được thêm vào khung stack khi hàm được gọi và được loại bỏ khi hàm trả về hoặc exit. Stack hoạt động theo cơ chế lifo. Stack ở hệ thống 32bit và 64 bit cơ bản đều giống nhau, khác nhau chỉ là độ lớn các thanh ghi và ô nhớ: 32 bit chỉ có 4byte trong khi 64 bit gấp đôi. Và khi một hàm được gọi ở hệ thống 32 bit, các arg của nó sẽ được push vào stack, 64 bit sẽ lưu các arg trong các thanh ghi
+Stack là một phân đoạn của bộ nhớ có thể thay đổi kích thước và tồn tại trong suốt quá trình thực thi của chương trình. Một stack frame sẽ được cung cấp cho một funtion mỗi khi được gọi tới. Nó chứa các local variable và các argument cùng với một return address. Stack frame sẽ được thêm vào khung stack khi hàm được gọi và được loại bỏ khi hàm trả về hoặc exit. Stack hoạt động theo cơ chế lifo. Stack ở hệ thống 32bit và 64 bit cơ bản đều giống nhau, khác nhau chỉ là độ lớn các thanh ghi và ô nhớ: 32 bit chỉ có 4byte trong khi 64 bit gấp đôi. Và khi một hàm được gọi ở hệ thống 32 bit, các arg của nó sẽ được push vào stack, còn 64 bit sẽ lưu các arg trong các thanh ghi
 
 ![rp1](rp1.png)
  
