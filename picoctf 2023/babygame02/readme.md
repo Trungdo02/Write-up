@@ -71,7 +71,7 @@ Với `v4[0] = 0` thì `v4[1] = 0xffffc71c - 0xffffc743 = -39` (hàng 0 cột -3
 
 Do đó ta đành tìm cặp khác: với `v4[0] = 1 thì v4[1] = -129` điều này còn tệ hơn trường hợp trước. Ta cần `v4[1]` phải dương nếu không sẽ gặp lỗi tương tự.
 
-Với `v4[0] = -1`, `v4[1] = 51` (hàng -1 cột 51) hoàn toàn hợp lệ. Test thì k gặp lỗi `SIGSEGV` nữa. Bây giờ địa chỉ của phép tính trên đã là nơi chứa `retAddr` của `move_player` rồi, giờ chỉ còn set byte cuối của `ret` thành `win` là hoàn thành
+Với `v4[0] = -1`, `v4[1] = 51` (hàng -1 cột 51) hoàn toàn hợp lệ. Test thì k gặp lỗi `SIGSEGV` nữa. Bây giờ địa chỉ của phép tính trên đã là nơi chứa `retAddr` của `move_player` rồi, giờ chỉ còn set byte cuối của `ret` thành `win` là hoàn thành. Do chỉ khác 1 byte sau nên chỉ cần set `player_tiles` thành `\x5d` là đủ
 
 ## Exploit
 do phải gửi theo byte nên viết script vậy =))
