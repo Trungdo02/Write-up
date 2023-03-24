@@ -78,7 +78,7 @@ Tóm lược chức năng của hàm này chỉ là di chuyển giá trị các 
 
 Câu lệnh này sẽ set `1byte` giá trị của địa chỉ được tính như trên thành `46 ('.')`. Chỉ cần giá trị này là địa chỉ của `v6` thì coi như thành công.
 
-Nhiệm vụ bây giờ là cần phải tìm cặp vị trí phù hợp của `v5[0]` và `v5[1]` để phép tính trên trỏ đến chính xác địa chỉ của `v6` với điều kiện `v5[1] < 29` và `v5[0] < 29`. 
+Nhiệm vụ bây giờ là cần phải tìm cặp vị trí phù hợp của `v5[0]` và `v5[1]` để phép tính trên trỏ đến chính xác địa chỉ của `v6` với điều kiện `v5[1] < 89` và `v5[0] < 29`. 
 
 ```c
 char v4; // [esp+1h] [ebp-AA5h]
@@ -106,4 +106,13 @@ flage
 flag.txt not found in current directory
 ```
 Chạy trên local ok rồi giờ remote để lấy flag
-*đang update flag, mạng lag quá T.T*
+
+```java
+..........................................................................................
+..........................................................................................
+.........................................................................................@
+You win!
+flage
+picoCTF{gamer_m0d3_enabled_0a880baf}
+```
+`flag: picoCTF{gamer_m0d3_enabled_0a880baf}`

