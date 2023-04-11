@@ -120,6 +120,7 @@ Dump of assembler code for function win:
    0x08049773 <+22>:    nop
    0x08049774 <+23>:    nop
    0x08049775 <+24>:    nop
+   ...
 ```
 ```python
 from pwn import *
