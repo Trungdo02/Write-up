@@ -199,7 +199,10 @@ def conn():
     if args.LOCAL:
         r = process([exe.path])
         if args.DEBUG:
-            gdb.attach(r)
+            gdb.attach(r, gdbscript='''
+            b *echo
+            c
+            ''')
     else:
         r = remote("addr", 1337)
 
@@ -208,10 +211,6 @@ def conn():
 
 def main():
     r = conn()
-    # gdb.attach(r, gdbscript='''
-    # b *echo
-    # c
-    # ''')
     # input()
 
     #round 1
